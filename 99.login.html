@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>로그인</title>
+
+    <script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
+    <style>
+        body { margin: 0;}
+        .wrap {
+            /* background-repeat: no-repeat;
+            background-position: center bottom;
+            background-size: cover;
+            background-image: url(img/moon.jpg); */
+            /* background: url(img/star.jpg); */
+            /* background: url(img/sky.jpg); */
+            /* transition: all 0.5s; */
+
+            width: 100%;
+            height: 100vh;
+        }
+        .wrap::before {
+            content:"";
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            right: 0;
+            z-index: 1 ;
+            background: rgba(0,0,0,0.3);
+        }
+        .bg_box {
+            width: 100%;
+            height: 100vh;
+            position: relative;
+        }
+        .bg_box > div {
+            width: 100%;
+            height: 100vh;
+
+            background-repeat: no-repeat;
+            background-position: center bottom;
+            background-size: cover;
+            
+            position: absolute;
+            left: 0;
+            top: 0; 
+        }
+        .bg_1 {
+            background-image: url(img/moon.jpg); 
+            display: block;
+        }
+        .bg_2 {
+            background-image: url(img/star.jpg);
+            display: none;
+        }
+        .bg_3 {
+            background-image: url(img/sky.jpg);
+            display: none;
+        }
+
+        .container {
+            width: 400px;
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            z-index: 9;
+            transform: translate(-50%, -50%);
+             
+            /* background: skyblue; */
+        }
+        .page_title {
+            font-size: 32px;
+            color: #fff;
+            text-align: center;
+            margin-bottom: 70px;
+        }
+        .input_area {
+            width: 100%;
+            height: 40px;
+            margin: 20px 0 10px ;
+            position: relative;
+        }
+        .input_area > label {
+            position: absolute;
+            left: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #fff;
+            opacity: 0.6;
+            transition: all 0.2s;
+
+            /* font-size: 11px; */
+        }
+        .input_area > .label_active {
+            top: -5px;
+            font-size: 11px;
+            opacity: 1 !important;
+            color: #5a98c8;
+        }
+        .input_area > .txt_area {
+            width: 100%;
+            height: 100%;
+            padding: 10px;
+            
+            box-sizing: border-box;
+            background: transparent;
+            border: none;
+            border-bottom: 1px solid #fff;
+            outline: none;
+            color: #fff;
+            font-size: 16px;
+        } 
+        #submit {
+            width: 100%;
+            height: 40px;
+            background: #0089f1;
+            border-radius: 20px;
+            color: #fff;
+            font-size: 16px;
+            margin: 20px 0;
+            border: none;
+            outline: none;
+            cursor: pointer;
+        }
+        .caption {
+            text-align: center;
+        }
+        .caption a {
+            color: #fff;
+            text-decoration: none;
+            opacity: 0.6;
+        }
+        .input_area > .txt_area:hover, .input_area:hover > label, .caption a:hover {
+            opacity: 1; 
+        }
+    </style>
+</head>
+<body>
+<div class="wrap">
+    <div class="bg_box">
+        <div class="bg_1"></div>
+        <div class="bg_2"></div>
+        <div class="bg_3"></div>
+    </div>
+
+
+    <div class="container">
+        <h1 class="page_title">BITSTUDY</h1>
+        <!-- valid_chk 의 결과가 true 일때만 form이 동작 -->
+        <form action="#" onsubmit="return valid_chk()"> 
+            <div class="input_area user_name">
+                <label for="id">USER NAME</label>
+                <input type="text" id="id" class="txt_area" autocomplete="off" required>
+            </div>
+            
+            <div class="input_area user_pw">
+                <label for="pw">PASSWORD</label>
+                <input type="text" id="pw" class="txt_area" autocomplete="off" required>
+            </div>
+
+            <input type="submit" id="submit" value="LOGIN">
+        </form>
+        <div class="caption">
+            <a href="#">Forgot Password?</a>
+        </div>
+    </div>
+
+    <script>
+        $(document).ready(function(){
+            // 배경 이미지 fade
+            let bg_index = 1;
+            let bg_div= $('.bg_box > div')
+            setInterval(function(){
+                bg_div.fadeOut(1000);
+                bg_div.eq(bg_index % 3).fadeIn(1000);
+                bg_index+=1;
+            }, 3000)
+
+
+            // id, pw 클릭시 라벨 위치 이동
+            let txt_area = $('.txt_area');
+            txt_area.on('click', function(){
+                if($('#id').val().length == 0) {
+                    $('#id').prev('label').removeClass('label_active')
+                }
+                if($('#pw').val().length == 0) {
+                    $('#pw').prev('label').removeClass('label_active')
+                }
+
+                $(this).prev('label').addClass('label_active')
+            });  
+
+            
+        });
+
+        function valid_chk() {
+            let id_val = document.getElementById('id').value;
+            let pw_val = document.getElementById('pw').value;
+
+            if(id_val == "") { 
+                alert("아이디를 입력하세요");
+            }
+            else if(pw_val == "") {
+                alert("비번을 입력하세요");
+            }
+            else {
+                $.ajax({
+                    url: "99.login_ajax.php",
+                    data: { _id:id_val , _pw:pw_val},
+                    type: 'GET',
+                    dataType: "json",
+                    success: function(data) {
+                        // db 잘 다녀왔을때
+                        console.log("성공");
+                        console.log(data.sql) 
+                        console.log(data.id)
+                        console.log(data.pw)
+                        console.log(data.name) 
+                        console.log(data.result_count) 
+                        
+                        if(data.result_count == 1) {
+                            alert(`환영합니다. ${data.name}님`);
+                            location.href= "100.index.php";
+                        }
+                        else {
+                            alert("일치하는 회원이 없습니다.")
+                        }
+                    },
+                    error: function(){ 
+                        // db 못 다녀왔을때
+                        console.log("실패");
+                    }
+                })
+            } 
+        }
+    </script>
+</div>
+</body>
+</html>
